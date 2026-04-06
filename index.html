@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AKKEE</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Mono:wght@400;500&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+html,body{
+  background:#fff;
+  color:#111;
+  font-family:'Courier Prime','Noto Sans Mono',monospace;
+  font-size:1rem;
+  line-height:1.95;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:#111;color:#fff;}
+
+/* ── screens ── */
+.s{display:none;min-height:100vh;}
+.s.on{display:block;}
+.vc{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.vc .w{padding-top:0;padding-bottom:0;}
+
+/* ── wrap ── */
+.w{max-width:600px;margin:0 auto;padding:72px 32px 96px;}
+
+/* ── wordmark ── */
+.wm{
+  font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;
+  color:#111;display:block;font-weight:400;
+}
+
+/* ── topbar ── */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:64px;}
+
+/* ── lang toggle ── */
+.lt{font-size:.68rem;letter-spacing:.12em;cursor:pointer;user-select:none;color:#999;}
+.lt .on{color:#111;text-decoration:underline;text-underline-offset:3px;}
+
+/* ── section label ── */
+.slbl{
+  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:#999;display:block;margin-bottom:14px;
+}
+
+/* ── password input ── */
+.pf{
+  display:block;width:100%;
+  border:none;border-bottom:1px solid #111;
+  background:transparent;outline:none;
+  font-family:'Courier Prime',monospace;
+  font-size:1.1rem;letter-spacing:.25em;color:#111;
+  padding:8px 0 12px;
+}
+.pf::placeholder{color:#ccc;letter-spacing:.1em;}
+.err{font-size:.72rem;color:#B80F17;margin-top:8px;min-height:1.1em;}
+
+/* ── buttons ── */
+.btn{
+  font-family:'Courier Prime',monospace;
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid #111;background:#fff;color:#111;
+  padding:10px 24px;cursor:pointer;
+}
+.btn:hover{background:#111;color:#fff;}
+
+.btn-blk{
+  font-family:'Courier Prime',monospace;
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid #111;background:#111;color:#fff;
+  padding:10px 24px;cursor:pointer;
+}
+.btn-blk:hover{background:#333;border-color:#333;}
+
+.btn-red{
+  font-family:'Courier Prime',monospace;
+  font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;
+  border:none;background:#B80F17;color:#fff;
+  padding:13px 40px;cursor:pointer;
+}
+.btn-red:disabled{background:#ddd;color:#aaa;cursor:default;}
+
+.ghost{
+  font-family:'Courier Prime',monospace;
+  font-size:.68rem;letter-spacing:.1em;
+  background:none;border:none;color:#999;
+  cursor:pointer;padding:0;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.ghost:hover{color:#111;}
+
+/* ── separator ── */
+.sep{border:none;border-top:1px solid #e8e8e8;margin:44px 0;}
+
+/* ── letter ── */
+.l-loc{font-size:.68rem;letter-spacing:.16em;color:#999;margin-bottom:36px;}
+.l-greet{font-style:italic;margin-bottom:1.8em;}
+.l-body p{margin-bottom:1.75em;}
+.l-body p:last-child{margin-bottom:0;}
+.l-signoff{margin-top:2em;}
+
+.toggle-v{
+  font-size:.7rem;color:#999;letter-spacing:.06em;
+  cursor:pointer;text-decoration:underline;
+  text-underline-offset:3px;display:inline-block;margin-bottom:22px;
+}
+.toggle-v:hover{color:#111;}
+
+/* ── form ── */
+.field{margin-bottom:40px;}
+.flbl{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:#999;margin-bottom:12px;}
+.fi{
+  display:block;width:100%;
+  border:none;border-bottom:1px solid #ddd;
+  background:transparent;outline:none;
+  font-family:'Courier Prime','Noto Sans Mono',monospace;
+  font-size:.98rem;padding:7px 0 10px;color:#111;
+  transition:border-color .15s;
+}
+.fi:focus{border-bottom-color:#111;}
+.fi::placeholder{color:#ccc;}
+.fta{
+  display:block;width:100%;
+  border:1px solid #ddd;
+  background:transparent;outline:none;
+  font-family:'Courier Prime','Noto Sans Mono',monospace;
+  font-size:.95rem;padding:11px 13px;color:#111;
+  resize:vertical;min-height:80px;
+  transition:border-color .15s;
+}
+.fta:focus{border-color:#111;}
+.fta::placeholder{color:#ccc;}
+
+/* ── tick / radio ── */
+.tick{display:flex;align-items:flex-start;gap:13px;margin-bottom:14px;cursor:pointer;user-select:none;}
+.tbox{
+  width:13px;height:13px;flex-shrink:0;margin-top:5px;
+  border:1px solid #bbb;background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .12s,border-color .12s;
+}
+.tbox.r{border-radius:50%;}
+.tbox.on{border-color:#111;background:#111;}
+.ck{color:#fff;font-size:8px;display:none;line-height:1;}
+.dot{width:5px;height:5px;border-radius:50%;background:#fff;display:none;}
+.tbox.on .ck,.tbox.on .dot{display:block;}
+.tlbl{font-size:.94rem;line-height:1.75;color:#111;}
+
+/* ── contact sub-label ── */
+.clbl{font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:7px;}
+
+/* ── dashboard ── */
+.rcard{border-top:1px solid #eee;padding:26px 0;}
+.rname{font-size:1rem;font-weight:700;color:#111;margin-bottom:4px;}
+.rmeta{font-size:.8rem;color:#999;line-height:1.85;margin-bottom:3px;}
+.rquote{font-size:.9rem;line-height:1.85;font-style:italic;margin:10px 0;color:#333;}
+.ract{font-size:.8rem;color:#555;line-height:1.75;margin-bottom:3px;}
+.rcontact{font-size:.76rem;color:#999;margin-top:6px;line-height:1.8;}
+
+@media(max-width:480px){
+  .w{padding:52px 20px 72px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1 — VISITOR PASSWORD
+═══════════════════════════════════════════ -->
+<div id="s-pass" class="s on">
+  <div class="vc">
+    <div class="w" style="max-width:400px;">
+
+      <span class="wm" style="margin-bottom:20px;">AKKEE</span>
+
+      <p id="tagline" style="font-size:.82rem;color:#555;line-height:1.9;margin-bottom:52px;">
+        Join us in building a better food system for everyone
+      </p>
+
+      <span class="slbl">Visitor Password</span>
+      <input id="pass-in" class="pf" type="password"
+        autocomplete="off" placeholder="· · · · · · · ·"
+        oninput="clrErr('pass-err')"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+      <p class="err" id="pass-err"></p>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
+        <button class="btn" onclick="doLogin()">Enter</button>
+        <span class="lt" onclick="toggleLang()">
+          <span class="on" id="l-en">EN</span>&nbsp;·&nbsp;<span id="l-th">TH</span>
+        </span>
+      </div>
+
+      <div class="sep"></div>
+
+      <span class="slbl">Author Access</span>
+      <button class="btn-blk" onclick="go('s-author-pass')">I'm the Author</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1b — AUTHOR LOGIN
+═══════════════════════════════════════════ -->
+<div id="s-author-pass" class="s">
+  <div class="vc">
+    <div class="w" style="max-width:400px;">
+
+      <span class="wm" style="margin-bottom:12px;">AKKEE</span>
+      <span class="slbl" style="margin-bottom:48px;">Author Access</span>
+
+      <input id="auth-in" class="pf" type="password"
+        autocomplete="off" placeholder="· · · · · · · ·"
+        oninput="clrErr('auth-err')"
+        onkeydown="if(event.key==='Enter')doAuthorLogin()"/>
+      <p class="err" id="auth-err"></p>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
+        <button class="btn" onclick="doAuthorLogin()">Enter</button>
+        <button class="ghost" onclick="go('s-pass')">← home</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2 — LETTER
+═══════════════════════════════════════════ -->
+<div id="s-letter" class="s">
+  <div class="w">
+
+    <div class="topbar">
+      <span class="wm">AKKEE</span>
+      <div style="display:flex;align-items:center;gap:24px;">
+        <button class="ghost" onclick="go('s-pass')">home</button>
+        <span class="lt" onclick="toggleLang();buildLetter()">
+          <span id="lb-en" class="on">EN</span>&nbsp;·&nbsp;<span id="lb-th">TH</span>
+        </span>
+      </div>
+    </div>
+
+    <p class="l-loc" id="l-loc"></p>
+    <p class="l-greet" id="l-greet"></p>
+    <div class="l-body" id="l-body"></div>
+    <p class="l-signoff" id="l-signoff" style="display:none;"></p>
+
+    <div class="sep"></div>
+
+    <span class="toggle-v" id="l-toggle" onclick="flipView()"></span><br/>
+    <button class="btn-red" id="ready-btn" style="margin-top:8px;"></button>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 3 — FORM
+═══════════════════════════════════════════ -->
+<div id="s-form" class="s">
+  <div class="w">
+
+    <div class="topbar">
+      <span class="wm">AKKEE</span>
+      <div style="display:flex;align-items:center;gap:24px;">
+        <button class="ghost" onclick="go('s-pass')">home</button>
+        <button class="ghost" onclick="go('s-letter')">← back</button>
+      </div>
+    </div>
+
+    <p id="f-title" style="font-size:.95rem;margin-bottom:52px;color:#111;line-height:1.7;"></p>
+
+    <div class="field"><p class="flbl" id="lbl1"></p><input id="f-name" class="fi" oninput="chkForm()"/></div>
+    <div class="field"><p class="flbl" id="lbl2"></p><input id="f-biz" class="fi" oninput="chkForm()"/></div>
+
+    <div class="field">
+      <p class="flbl" id="lbl3"></p>
+      <div id="role-list" style="margin-top:10px;"></div>
+      <div id="other-w" style="display:none;margin-top:8px;">
+        <input id="f-other" class="fi" style="max-width:280px;"/>
+      </div>
+    </div>
+
+    <div class="field"><p class="flbl" id="lbl4"></p><textarea id="f-why" class="fta"></textarea></div>
+
+    <div class="field">
+      <p class="flbl" id="lbl5"></p>
+      <p id="f-gather" style="font-size:.82rem;color:#999;margin-bottom:18px;line-height:1.75;"></p>
+      <div id="attend-list"></div>
+    </div>
+
+    <div class="field">
+      <p class="flbl" id="lbl6"></p>
+      <div id="activity-list" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="field" style="margin-bottom:52px;">
+      <p class="flbl" id="lbl7"></p>
+      <div style="margin-bottom:24px;"><p class="clbl">Email *</p><input id="f-email" type="email" class="fi" oninput="chkForm()"/></div>
+      <div style="margin-bottom:24px;"><p class="clbl">Phone</p><input id="f-phone" type="tel" class="fi"/></div>
+      <div style="margin-bottom:24px;"><p class="clbl">LINE</p><input id="f-line" class="fi"/></div>
+      <div><p class="clbl">IG</p><input id="f-ig" class="fi"/></div>
+    </div>
+
+    <p id="f-serr" style="font-size:.74rem;color:#B80F17;margin-bottom:12px;display:none;"></p>
+    <button class="btn-red" id="submit-btn" onclick="doSubmit()" disabled></button>
+    <p id="f-note" style="font-size:.67rem;color:#999;margin-top:12px;"></p>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 4 — THANKS
+═══════════════════════════════════════════ -->
+<div id="s-thanks" class="s">
+  <div class="vc">
+    <div class="w" style="max-width:480px;">
+      <span class="wm" style="margin-bottom:56px;">AKKEE</span>
+      <p id="t-msg" style="font-size:.98rem;line-height:2.1;margin-bottom:24px;"></p>
+      <p id="t-sign" style="font-size:.84rem;color:#999;font-style:italic;margin-bottom:40px;"></p>
+      <button class="ghost" onclick="go('s-pass')">← home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 5 — AUTHOR DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="s-dash" class="s">
+  <div class="w">
+
+    <div class="topbar">
+      <span class="wm">AKKEE</span>
+      <button class="ghost" onclick="go('s-pass')">← home</button>
+    </div>
+
+    <span class="slbl">Responses</span>
+
+    <div style="margin-bottom:36px;">
+      <span id="r-count"></span>
+      <button class="btn" id="dl-btn" onclick="" style="display:none;"></button>
+    </div>
+
+    <div id="r-list"></div>
+
+  </div>
+</div>
+
+<script>
+const VP='2may26', AP='fire';
+/* ─────────────────────────────────────────────────────────
+   FORMSPREE SETUP
+   1. Go to https://formspree.io and create a free account
+   2. Create a new form — copy the endpoint (looks like
+      https://formspree.io/f/abcdefgh)
+   3. Paste it below to replace the placeholder
+   ───────────────────────────────────────────────────────── */
+const FORMSPREE = 'https://formspree.io/f/YOUR_FORM_ID';
+
+let lang='en', isFull=true, roles=[], attend='', activities=[];
+
+const C={
+  en:{
+    passErr:'incorrect password.',
+    loc:'Nonthaburi, 2026',
+    greeting:'Dear Friends in the Food and Beverage Community,',
+    signoff:'Sittikorn and the AKKEE team',
+    tFull:'read the full letter →',
+    tShort:'← shorter version',
+    ready:'Ready',
+    formTitle:'Join us in building a better food system for everyone',
+    lbl1:'1. Name',lbl2:'2. Business Name',lbl3:'3. Your Role',
+    lbl4:'4. Why are you interested in joining?',
+    lbl5:'5. First Gathering',
+    lbl6:'6. Activities you\'d like to participate in',
+    lbl7:'7. Contact',
+    gather:'May 2, 2026 (Afternoon), AKKEE',
+    submit:'Submit',
+    note:'* required: name, business, role, attendance, email',
+    storeErr:'something went wrong. please try again.',
+    thanksMsg:'Thank you. We will be in touch soon.',
+    thanksSign:'Sittikorn and the AKKEE team',
+    namePh:'your name',bizPh:'restaurant or business name',
+    whyPh:'a few words is fine',otherPh:'please specify',
+    roles:['Owner','Kitchen','Beverage','Producer / Farmer','Other'],
+    attend:['Yes, I can attend','Maybe','Not this time, but interested in future events'],
+    activities:[
+      'Interested in joining a discussion on how to support farmers',
+      'Interested in farmer and producer products'
+    ],
+    full:[
+      'At Akkee, we have always believed that when we raise a glass to someone, that glass should honor local farmers. What we drink should also be local. Something distilled nearby, made from ingredients grown in our own soil, cared for by the same hands whose work appears on our plates. This is something we often return to after service, late at night in the kitchen, or over a laarb meal together, when we find ourselves asking what kind of system we are helping to build.',
+      'If the people who grow our food can barely make a living while food from the other side of the world becomes cheaper and more normal, what does that say about the system we are part of? This question has weighed on us for a long time. And in speaking with chefs, restaurant owners, beverage makers, and producers across the F&B community, the same tension keeps surfacing. Why is food grown carefully, in season, in our own landscape, often more expensive than food produced in factories, shipped across oceans, stored for months? Cheap for whom? Not for the soil. Not for the farmers. Not for the future.',
+      'The price only appears cheap because the real cost is pushed elsewhere, into degraded soil, polluted rivers, lost biodiversity, and underpaid labor. We live in a food system that makes synthetic inputs seem reasonable and living food seem expensive. We understand the pressures. We understand margins and customer expectations. But we also began asking ourselves when convenience became equal to participating in a system that undermines the very foundations of our food.',
+      'We do not believe this is something solved by a few menu changes. We would like to invite friends across the F&B world into a real conversation. Not for image, not for performative sustainability, but a conversation between chefs, farmers, beverage makers, restaurant owners, and small-scale producers. This may mean higher costs and more coordination in the short term. But in the long term, we gain stronger relationships with farmers, more resilient supply chains, restaurants with identity, and a fairer food system.',
+      'If this resonates with you, we invite you to respond. There is no need to commit yet. Just let us know if you would like to be part of this journey.',
+      'We will speak soon.'
+    ],
+    short:[
+      'At AKKEE, we believe that what we serve, including what we pour, should support local farmers and producers.',
+      'Right now, the system makes carefully grown local food harder to access than processed products shipped from across the world. We believe this needs to change, and it cannot be done alone.',
+      'We are inviting chefs, restaurant owners, beverage makers, and producers to start an honest conversation about building a stronger local food and drink ecosystem together.',
+      "If this sounds like something you also believe in, click 'Ready.'"
+    ]
+  },
+  th:{
+    passErr:'รหัสผ่านไม่ถูกต้อง',
+    loc:'นนทบุรี, 2568',
+    greeting:'ถึงเพื่อน ๆ ในวงการอาหารและเครื่องดื่ม',
+    signoff:'อู๋และทีมอัคคี',
+    tFull:'อ่านจดหมายฉบับเต็ม →',
+    tShort:'← ย่อ',
+    ready:'พร้อม',
+    formTitle:'ร่วมกันสร้างระบบอาหารที่ดีกว่าสำหรับทุกคน',
+    lbl1:'1. ชื่อ',lbl2:'2. ชื่อธุรกิจ / ร้านอาหาร',lbl3:'3. ตำแหน่งของคุณ',
+    lbl4:'4. ทำไมคุณจึงสนใจเข้าร่วม',
+    lbl5:'5. งานพบปะครั้งแรก',
+    lbl6:'6. กิจกรรมที่คุณสนใจ',
+    lbl7:'7. ช่องทางติดต่อ',
+    gather:'2 พฤษภาคม 2569 (ช่วงบ่าย), ร้านอัคคี',
+    submit:'ส่งแบบฟอร์ม',
+    note:'* จำเป็น: ชื่อ, ธุรกิจ, ตำแหน่ง, การเข้าร่วม, Email',
+    storeErr:'เกิดข้อผิดพลาด กรุณาลองใหม่',
+    thanksMsg:'ขอบคุณที่ตอบกลับ เราจะติดต่อกลับหาคุณเร็ว ๆ นี้',
+    thanksSign:'อู๋และทีมอัคคี',
+    namePh:'ชื่อของคุณ',bizPh:'ชื่อร้านหรือธุรกิจ',
+    whyPh:'เขียนสั้น ๆ ได้เลย',otherPh:'โปรดระบุ',
+    roles:['เจ้าของธุรกิจ','ครัว','ฝ่ายเครื่องดื่ม','ผู้ผลิต / เกษตรกร','อื่น ๆ'],
+    attend:['เข้าร่วมได้','อาจเข้าร่วมได้','ไม่สะดวก แต่สนใจเข้าร่วมครั้งถัดไป'],
+    activities:[
+      'สนใจเข้าร่วมวงสนทนาหาวิธีสนับสนุนเกษตรกร',
+      'สนใจสินค้าเกษตรกร/ผู้ผลิต'
+    ],
+    full:[
+      'ร้านอัคคีเชื่อมาโดยตลอดว่า หากเราจะยกแก้วให้กับใคร แก้วนั้นควรมาจากเกษตรกรท้องถิ่น และควรเป็นเครื่องดื่มท้องถิ่น เป็นสุรากลั่นจากคนบ้านใกล้ ที่ใช้วัตถุดิบจากสวนและนา เป็นสิ่งที่มีรากอยู่ในดินเดียวกัน เติบโตในพื้นที่เดียวกัน และผ่านแรงงานของผู้คนสัญชาติเดียวกับวัตถุดิบบนจานของเรา',
+      'เพราะถ้าเราซื่อสัตย์กับตัวเอง นี่เป็นสิ่งที่ทีมเรากลับมาคุยกันบ่อย ๆ หลังจบเซอร์วิส คุยในครัวตอนดึก หรือคุยกันต่อในร้านลาบ คำถามที่เรากลับมาถามตัวเองเสมอคือ เรากำลังร่วมสร้างระบบอะไรกันแน่ หากคนที่ปลูกอาหารจริง ๆ รอบตัวเรามีชีวิตที่แทบจะอยู่ไม่ได้ ในขณะที่อาหารแปรรูปจากอีกฟากโลกกลับถูกกว่า ง่ายกว่า และกลายเป็นเรื่องปกติ คำถามนี้หนักอึ้งอยู่ในใจเรามานาน',
+      'เราเริ่มคุยกับเพื่อน ๆ ในวงการ F&B มากขึ้น ทั้งเชฟ เจ้าของร้าน คนทำเครื่องดื่ม ผู้ผลิต และผู้คนที่ต้องซื้อวัตถุดิบทุกสัปดาห์ รวมถึงคนที่ต้องอธิบายราคากับลูกค้าทุกคืน และความตึงเครียดเดียวกันก็โผล่ขึ้นมาเสมอ ทำไมอาหารที่ปลูกอย่างตั้งใจ ตามฤดูกาล ในภูมิประเทศของเรา กลับมีราคาสูงกว่าอาหารที่ผลิตในโรงงาน ผ่านสารเติมแต่ง ขนส่งข้ามมหาสมุทร เก็บในคลังเป็นเดือน แล้วขายกลับมาให้เราในชื่อของความสะดวก ทำไมเนื้อหมูหรือข้าวโพดจากเกษตรกรรายย่อยใกล้บ้าน กลับแข่งขันกับวัตถุดิบที่เดินทางหลายพันกิโลเมตรไม่ได้ ทั้งที่ผ่านระบบขนส่งแบบรักษาอุณหภูมิ บรรจุภัณฑ์ ตัวกลาง และสัญญาค้าขายหลายชั้น',
+      'ราคาถูก นี่ถูกสำหรับใคร ไม่ใช่สำหรับดิน ไม่ใช่สำหรับน้ำ ไม่ใช่สำหรับเกษตรกร และไม่ใช่สำหรับอนาคต ราคาที่ดูเหมือนถูก เป็นเพราะต้นทุนที่แท้จริงถูกผลักไปที่อื่น ไปอยู่ในดินที่เสื่อมโทรม แม่น้ำที่ปนเปื้อน ความหลากหลายทางชีวภาพที่หายไป และแรงงานที่ถูกกดค่า พูดกันตรง ๆ ว่า เราไม่ได้จ่ายน้อยลง ราคาที่เราจ่ายอาจไม่ได้มาในรูปของเงิน และอาจไม่ได้เกิดขึ้นทันที บางครั้งผลกระทบนั้นรุนแรงกว่าที่เราคิด',
+      'เราอยู่ในระบบอาหารที่ทำให้สิ่งที่เป็นเคมีสังเคราะห์ดูสมเหตุสมผล และทำให้สิ่งที่มีชีวิตดูแพง ระบบที่อาหารแปรรูปเก็บได้นานทำราคาได้ดีกว่าอาหารสดในท้องถิ่น ระบบที่การปลูกพืชชนิดเดียวทั้งแปลงถูกมองว่ามีประสิทธิภาพ แม้มันจะทำลายดินปีแล้วปีเล่า และระบบที่ความสม่ำเสมอ ความขนส่งง่าย และการส่งออก กลายเป็นสิ่งสำคัญกว่าคุณค่าทางโภชนาการ หรือความเป็นอยู่ของผู้คนในชุมชน และถ้าจะยอมรับกันตรง ๆ เราในวงการ F&B เองก็เป็นส่วนหนึ่งของระบบนี้ด้วย',
+      'เรารู้แรงกดดันดี ทั้งเรื่องต้นทุน กำไร ความสม่ำเสมอ และความคาดหวังของลูกค้า เรารู้ว่าการเลือกวัตถุดิบที่มีตลอดปีและมาตรฐานเดียวกันนั้นถูกกว่าและง่ายกว่า แต่เราก็เริ่มถามตัวเองว่า เมื่อไหร่ที่คำว่าความสะดวก กลายเป็นการยอมรับระบบที่บั่นทอนรากฐานของอาหาร เพราะการปลูกพืชชนิดเดียวทั้งแปลงไม่ใช่เรื่องปกติ มันคือผืนดินที่ถูกบังคับให้เชื่อฟัง และระบบแบบนี้ต่อต้านความหลากหลาย เมื่อไม่มีความหลากหลาย ก็ไม่มีความยืดหยุ่น และเมื่อระบบขัดแย้งกับธรรมชาติ มันก็ขัดแย้งกับความเป็นอยู่ของมนุษย์',
+      'เรากำลังเห็นมันแล้ว เกษตรกรเผชิญกับความเสี่ยงมากขึ้น ได้ผลตอบแทนน้อยลง คนรุ่นใหม่ออกจากภาคเกษตร ชุมชนพึ่งพาห่วงโซ่อุปทานที่ควบคุมไม่ได้ และอาหารถูกออกแบบเพื่อกำไร มากกว่าคุณค่า เรามักพูดกันว่า ผักท้องถิ่นดี ๆ ทำไมแพงขนาดนี้ แต่บางที นี่อาจเป็นราคาที่ควรจะเป็นมาตลอด อาหารท้องถิ่นไม่ได้แพงเกินไป เราแค่ถูกฝึกให้คาดหวังว่าอาหารควรถูก ตราบใดที่มีคนอื่นแบกรับต้นทุนแทน ไม่ว่าจะเป็นเกษตรกร คนงาน แม่น้ำ ป่า แมลง เมล็ดพันธุ์ หรือเด็กที่โตมาโดยไม่รู้จักอาหารจริง ๆ',
+      'ร้านอัคคีไม่คิดว่านี่เป็นปัญหาที่แก้ได้ด้วยเมนูเพียงไม่กี่เมนู เราอยากชวนเพื่อนในวงการ F&B มาคุยกันอย่างจริงจัง ไม่ใช่เพื่อภาพลักษณ์ ไม่ใช่เพื่อความยั่งยืนแบบผิวเผิน และไม่ใช่นัดชิมแล้วแยกย้าย แต่เป็นบทสนทนาระหว่างเชฟ เกษตรกร คนทำเครื่องดื่ม เจ้าของร้าน ซัพพลายเออร์ และผู้ผลิตรายย่อย รวมถึงคนที่อยากซื้อของดีแต่กังวลเรื่องต้นทุน และคนที่อยากสื่อสารกับลูกค้าโดยไม่อยากดูเหมือนสั่งสอน',
+      'เราอยากบอกตรง ๆ ว่าในระยะสั้น สิ่งนี้อาจทำให้ต้นทุนสูงขึ้น ต้องทดลองมากขึ้น เปลี่ยนเมนูบ่อยขึ้น ใช้เวลาประสานงานมากขึ้น และต้องอธิบายกับลูกค้ามากขึ้น แต่ในระยะยาว เราจะได้ความสัมพันธ์กับเกษตรกรที่เกื้อกูลกัน ความมั่นคงทางอาหาร ห่วงโซ่อุปทานที่ยืดหยุ่น ร้านอาหารที่มีเอกลักษณ์ ระบบอาหารที่เป็นธรรม และวงการอาหารที่มีชีวิตชีวา ที่สำคัญที่สุด เราจะเชื่อมั่นได้ว่า เราไม่ได้แค่ทำธุรกิจอาหาร แต่กำลังสร้างความเปลี่ยนแปลงที่มีความหมาย',
+      'ถ้าคุณรู้สึกว่าเรื่องนี้มีความหมายสำหรับคุณ เราขอชวนคุณตอบกลับผ่านลิงก์ด้านล่าง ยังไม่ต้องให้คำมั่นอะไร แค่บอกว่าอยากเป็นส่วนหนึ่งของการเดินทางครั้งนี้ เรารู้ว่ามันอาจไม่สมบูรณ์แบบ และอาจต้องใช้เวลาและทรัพยากร แต่ถ้ามีคนที่เชื่อในทิศทางเดียวกันมากพอ เราเชื่อว่าเราจะช่วยกันสร้างระบบอาหารที่มีความเป็นท้องถิ่นมากขึ้น หลากหลายมากขึ้น ยืดหยุ่นมากขึ้น และเป็นธรรมมากขึ้น',
+      'แล้วเราคุยกันเร็ว ๆ นี้ครับ'
+    ],
+    short:[
+      'สรุปสั้น ๆ',
+      'ร้านอัคคีเราเชื่อว่าสิ่งที่เรานำเสนอ รวมถึงสิ่งที่เราเทลงในแก้ว ควรสนับสนุนเกษตรกรและผู้ผลิตท้องถิ่น วันนี้ ระบบอาหารกลับทำให้อาหารท้องถิ่นที่ปลูกอย่างตั้งใจเข้าถึงยากกว่าผลิตภัณฑ์แปรรูปที่ส่งมาจากอีกฟากโลก เราเชื่อว่าสิ่งนี้ควรเปลี่ยน และเราไม่สามารถทำได้เพียงลำพัง',
+      'เราจึงอยากชวนทุกคน ทั้งเชฟ เจ้าของร้าน คนทำเครื่องดื่ม และผู้ผลิต มาร่วมเริ่มบทสนทนาอย่างจริงจัง เพื่อสร้างระบบอาหารและเครื่องดื่มท้องถิ่นที่แข็งแรงขึ้นไปด้วยกัน',
+      'ถ้าคุณเชื่อในสิ่งเดียวกัน คลิกคำว่า "พร้อม"'
+    ]
+  }
+};
+
+function go(id){
+  document.querySelectorAll('.s').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+function toggleLang(){ lang=lang==='en'?'th':'en'; setLangUI(); }
+function setLangUI(){
+  const en=lang==='en';
+  ['l-en','lb-en'].forEach(id=>{const e=document.getElementById(id);if(e)e.className=en?'on':'';});
+  ['l-th','lb-th'].forEach(id=>{const e=document.getElementById(id);if(e)e.className=en?'':'on';});
+  const tl=document.getElementById('tagline');
+  if(tl)tl.textContent=en
+    ?'Join us in building a better food system for everyone'
+    :'ร่วมกันพัฒนาระบบอาหารที่ยั่งยืน';
+}
+function clrErr(id){ document.getElementById(id).textContent=''; }
+
+function doLogin(){
+  const v=document.getElementById('pass-in').value.trim().toLowerCase();
+  document.getElementById('pass-in').value='';
+  if(v===VP){ buildLetter(); go('s-letter'); }
+  else{ document.getElementById('pass-err').textContent=C[lang].passErr; }
+}
+function doAuthorLogin(){
+  const v=document.getElementById('auth-in').value.trim().toLowerCase();
+  document.getElementById('auth-in').value='';
+  if(v===AP){ loadResp(); go('s-dash'); }
+  else{ document.getElementById('auth-err').textContent='incorrect.'; }
+}
+
+function buildLetter(){
+  const t=C[lang], paras=isFull?t.full:t.short;
+  document.getElementById('l-loc').textContent=t.loc;
+  document.getElementById('l-greet').textContent=t.greeting;
+  document.getElementById('l-body').innerHTML=paras.map(p=>`<p>${p}</p>`).join('');
+  const sf=document.getElementById('l-signoff');
+  sf.innerHTML=isFull?t.signoff:'';
+  sf.style.display=isFull?'block':'none';
+  document.getElementById('l-toggle').textContent=isFull?t.tShort:t.tFull;
+  document.getElementById('ready-btn').textContent=t.ready;
+  setLangUI();
+}
+function flipView(){ isFull=!isFull; buildLetter(); }
+
+function buildForm(){
+  const t=C[lang];
+  roles=[]; attend=''; activities=[];
+  const map={
+    'f-title':t.formTitle,'lbl1':t.lbl1,'lbl2':t.lbl2,'lbl3':t.lbl3,
+    'lbl4':t.lbl4,'lbl5':t.lbl5,'lbl6':t.lbl6,'lbl7':t.lbl7,
+    'f-gather':t.gather,'f-note':t.note,'submit-btn':t.submit
+  };
+  Object.entries(map).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v;});
+  const ph={'f-name':t.namePh,'f-biz':t.bizPh,'f-why':t.whyPh,'f-other':t.otherPh};
+  Object.entries(ph).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.placeholder=v;});
+
+  document.getElementById('role-list').innerHTML=t.roles.map((r,i)=>`
+    <div class="tick" onclick="togRole('${r.replace(/'/g,"\\'")}',${i})">
+      <span class="tbox" id="rb${i}"><span class="ck">✓</span></span>
+      <span class="tlbl">${r}</span>
+    </div>`).join('');
+
+  document.getElementById('attend-list').innerHTML=t.attend.map((o,i)=>`
+    <div class="tick" onclick="selAtt('${o.replace(/'/g,"\\'")}',${i})">
+      <span class="tbox r" id="ab${i}"><span class="dot"></span></span>
+      <span class="tlbl">${o}</span>
+    </div>`).join('');
+
+  document.getElementById('activity-list').innerHTML=t.activities.map((a,i)=>`
+    <div class="tick" onclick="togAct('${a.replace(/'/g,"\\'")}',${i})">
+      <span class="tbox" id="acb${i}"><span class="ck">✓</span></span>
+      <span class="tlbl">${a}</span>
+    </div>`).join('');
+
+  chkForm();
+}
+
+function togRole(r,i){
+  const b=document.getElementById('rb'+i);
+  if(roles.includes(r)){roles=roles.filter(x=>x!==r);b.classList.remove('on');}
+  else{roles.push(r);b.classList.add('on');}
+  document.getElementById('other-w').style.display=
+    roles.some(x=>x==='Other'||x==='อื่น ๆ')?'block':'none';
+  chkForm();
+}
+function selAtt(o,i){
+  attend=o;
+  document.querySelectorAll('.tbox.r').forEach(b=>b.classList.remove('on'));
+  document.getElementById('ab'+i).classList.add('on');
+  chkForm();
+}
+function togAct(a,i){
+  const b=document.getElementById('acb'+i);
+  if(activities.includes(a)){activities=activities.filter(x=>x!==a);b.classList.remove('on');}
+  else{activities.push(a);b.classList.add('on');}
+}
+function chkForm(){
+  const ok=document.getElementById('f-name').value.trim()
+         &&document.getElementById('f-biz').value.trim()
+         &&roles.length&&attend
+         &&document.getElementById('f-email').value.trim();
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=!ok; btn.style.opacity=ok?1:.3;
+}
+
+async function doSubmit(){
+  const t=C[lang];
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.style.opacity=.5;
+  const data={
+    name:       document.getElementById('f-name').value.trim(),
+    business:   document.getElementById('f-biz').value.trim(),
+    role:       [...roles].join(', '),
+    roleOther:  document.getElementById('f-other').value.trim(),
+    why:        document.getElementById('f-why').value.trim(),
+    attendance: attend,
+    activities: [...activities].join(', '),
+    email:      document.getElementById('f-email').value.trim(),
+    phone:      document.getElementById('f-phone').value.trim(),
+    line:       document.getElementById('f-line').value.trim(),
+    ig:         document.getElementById('f-ig').value.trim(),
+    language:   lang
+  };
+  /* if Formspree not yet configured, show success anyway (preview mode) */
+  if(FORMSPREE.includes('YOUR_FORM_ID')){
+    document.getElementById('t-msg').textContent=t.thanksMsg;
+    document.getElementById('t-sign').textContent=t.thanksSign;
+    go('s-thanks');
+    return;
+  }
+  try{
+    const res=await fetch(FORMSPREE,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(data)
+    });
+    if(res.ok){
+      document.getElementById('t-msg').textContent=t.thanksMsg;
+      document.getElementById('t-sign').textContent=t.thanksSign;
+      go('s-thanks');
+    } else {
+      throw new Error('server error');
+    }
+  }catch(e){
+    btn.disabled=false; btn.style.opacity=1;
+    const el=document.getElementById('f-serr');
+    el.textContent=t.storeErr; el.style.display='block';
+  }
+}
+
+function loadResp(){ renderDash(); }
+
+function renderDash(){
+  const list=document.getElementById('r-list');
+  list.innerHTML=`
+    <p style="font-size:.88rem;line-height:1.95;margin-bottom:28px;color:#555;">
+      All responses are collected in your Google Sheet.
+    </p>
+    <a href="https://docs.google.com/spreadsheets/d/1xjokjKup3ab7gJU8crUQGLgx-YmL6YQrhfgPIkYdJHk/edit?usp=sharing"
+      target="_blank" rel="noopener"
+      style="display:inline-block;font-family:'Courier Prime',monospace;
+             font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+             border:1px solid #111;padding:10px 24px;color:#111;text-decoration:none;">
+      Open Google Sheet →
+    </a>`;
+  document.getElementById('r-count').textContent='';
+  document.getElementById('dl-btn').style.display='none';
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+document.getElementById('ready-btn').addEventListener('click',()=>{
+  window.open('https://forms.gle/eMUnXEza283sR7ah7','_blank');
+});
+document.getElementById('pass-in').focus();
+</script>
+</body>
+</html>
